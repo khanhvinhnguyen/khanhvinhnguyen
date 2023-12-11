@@ -6,7 +6,7 @@
 - <img align="center" src="./images/icon/linkedin.png" title = "Twitter" alt="" height="20" /> [in/khanhvinhnguyen](https://www.linkedin.com/in/khanhvinhnguyen/) 
 
 🖥️ I'm a full-stack developer with a passion for building beautiful, functional, and scalable web applications. <br>
-Well-versed in Front-End development. Good at PHP (Laravel), ReactJs, NextJS, and CSS for web applications.
+Well-versed in Front-End development. Good at ReactJs, NextJS, and CSS for web applications.
 
 
 ## GitHub Streak Stats
