@@ -12,7 +12,7 @@ Well-versed in Front-End development. Good at ReactJs, NextJS, and CSS for web a
 ## GitHub Streak Stats
 
 [![GitHub Streak](https://github-readme-streak-stats.herokuapp.com?user=khanhvinhnguyen&theme=merko&border_radius=10)](https://git.io/streak-stats) 
-
+[![GitHub Streak](https://streak-stats.demolab.com/?user=khanhvinhnguyen&theme=merko&border_radius=10)](https://git.io/streak-stats)
 
 [![Emma github activity graph](https://github-readme-activity-graph.vercel.app/graph?username=khanhvinhnguyen&theme=merko)](https://github.com/ashutosh00710/github-readme-activity-graph)
 
