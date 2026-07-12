@@ -24,7 +24,6 @@ My strongest area is **frontend engineering with React and Next.js**, backed by 
     />
   </a>
 </div>
----
 
 ## About Me
 
