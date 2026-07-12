@@ -11,9 +11,19 @@ My strongest area is **frontend engineering with React and Next.js**, backed by 
 [![Portfolio](https://img.shields.io/badge/Portfolio-vinhnguyen.vercel.app-111111?style=flat-square\&logo=vercel\&logoColor=white)](https://vinhnguyen.vercel.app)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-khanhvinhnguyen-0A66C2?style=flat-square\&logo=linkedin\&logoColor=white)](https://www.linkedin.com/in/khanhvinhnguyen/)
 
-[![My GitPet](https://wetwenties-gitpet.vercel.app/api/card/khanhvinhnguyen)](https://wetwenties-gitpet.vercel.app/khanhvinhnguyen)
 </div>
 
+## My GitPet
+
+<div align="center">
+  <a href="https://wetwenties-gitpet.vercel.app/khanhvinhnguyen">
+    <img
+      src="https://wetwenties-gitpet.vercel.app/api/card/khanhvinhnguyen"
+      alt="Vinh's GitPet"
+      width="800"
+    />
+  </a>
+</div>
 ---
 
 ## About Me
