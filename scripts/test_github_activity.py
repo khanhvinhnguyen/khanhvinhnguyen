@@ -6,7 +6,7 @@ from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
 from github_activity import (
-    CalendarParser, calculate_stats, main, prepare_readme, render_svg, validate_days,
+    CalendarParser, calculate_stats, main, prepare_readme, render_svg, render_streak_svg, validate_days,
 )
 
 
@@ -79,18 +79,40 @@ class ActivityTests(unittest.TestCase):
         today = date(2026, 9, 9)
         days = {today: 0}
         now = datetime(2026, 9, 9, 10, tzinfo=ZoneInfo("Asia/Ho_Chi_Minh"))
-        svg = render_svg("someone", days, calculate_stats(days, today), today, now)
-        self.assertEqual(ET.fromstring(svg).tag, "{http://www.w3.org/2000/svg}svg")
+        for renderer in (render_svg, render_streak_svg):
+            svg = renderer("someone", days, calculate_stats(days, today), today, now)
+            self.assertEqual(ET.fromstring(svg).tag, "{http://www.w3.org/2000/svg}svg")
+
+    def test_graph_retains_31_exact_counts_across_month_boundary(self):
+        import xml.etree.ElementTree as ET
+        from datetime import timedelta
+        today = date(2026, 9, 9)
+        days = {today - timedelta(days=i): i + 1 for i in range(31)}
+        now = datetime(2026, 9, 9, 10, tzinfo=ZoneInfo("Asia/Ho_Chi_Minh"))
+        svg = render_svg("someone", days, calculate_stats(days, today), min(days), now)
+        points = ET.fromstring(svg).findall('.//*[@class="ct-point"]')
+        self.assertEqual(len(points), 31)
+        self.assertEqual(points[0][0].text, "2026-08-10: 31 contributions")
+        self.assertEqual(points[-1][0].text, "2026-09-09: 1 contributions")
+
+    def test_graph_omits_empty_today_like_the_original_widget(self):
+        import xml.etree.ElementTree as ET
+        today = date(2026, 9, 9)
+        days = {date(2026, 9, 8): 6, today: 0}
+        now = datetime(2026, 9, 9, 10, tzinfo=ZoneInfo("Asia/Ho_Chi_Minh"))
+        svg = render_svg("someone", days, calculate_stats(days, today), min(days), now)
+        points = ET.fromstring(svg).findall('.//*[@class="ct-point"]')
+        self.assertEqual(points[-1][0].text, "2026-09-08: 6 contributions")
 
     def test_readme_preserves_other_content_and_versions_the_image(self):
         original = "Before\n<!-- github-activity:start -->old<!-- github-activity:end -->\nAfter"
-        first = prepare_readme(original, "someone", "first-svg")
-        second = prepare_readme(first, "someone", "second-svg")
+        first = prepare_readme(original, "someone", "first-svg", "first-streak")
+        second = prepare_readme(first, "someone", "second-svg", "second-streak")
         self.assertTrue(second.startswith("Before\n"))
         self.assertTrue(second.endswith("\nAfter"))
         self.assertNotEqual(first, second)
         with self.assertRaises(ValueError):
-            prepare_readme("No markers", "someone", "svg")
+            prepare_readme("No markers", "someone", "svg", "streak")
 
 
 if __name__ == "__main__":

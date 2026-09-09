@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import hashlib
-import html
 import json
 import os
 import re
@@ -19,11 +18,12 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
+from merko import render_graph as render_svg, render_streak as render_streak_svg
+
 ROOT = Path(__file__).resolve().parents[1]
 START_MARKER = "<!-- github-activity:start -->"
 END_MARKER = "<!-- github-activity:end -->"
 DAY = timedelta(days=1)
-COLORS = ("#1b252d", "#29482f", "#48783b", "#7eae36", "#b8e600")
 
 
 def date_range(start: date, end: date):
@@ -152,81 +152,19 @@ def calculate_stats(days, today: date):
     }
 
 
-def short_date(value):
-    return f"{value.day} {value:%b %Y}"
-
-
-def streak_dates(start, end):
-    if start is None:
-        return "No active streak"
-    return short_date(start) if start == end else f"{short_date(start)} – {short_date(end)}"
-
-
-def render_svg(username: str, days, stats, start: date, now: datetime):
-    today = now.date()
-    sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-    grid_start = sunday - timedelta(weeks=25)
-    visible = {day: count for day, count in days.items() if day >= grid_start}
-    maximum = max(visible.values(), default=0)
-    esc = html.escape
-    parts = [f'''<svg xmlns="http://www.w3.org/2000/svg" width="850" height="490" viewBox="0 0 850 490" role="img" aria-labelledby="title description">
-<title id="title">{esc(username)}'s GitHub activity</title>
-<desc id="description">{stats['current']} day current streak, {stats['longest']} day longest streak, {stats['total']} contributions since {start}. Refreshed {esc(now.isoformat())}. Calendar dates are supplied by GitHub.</desc>
-<style>text{{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}}.label{{fill:#9caab6;font-size:13px}}.value{{fill:#eef3f7;font-size:42px;font-weight:700;letter-spacing:-1px}}.detail{{fill:#9caab6;font-size:12px}}.month{{fill:#9caab6;font-size:12px}}</style>
-<rect x=".5" y=".5" width="849" height="489" rx="16" fill="#0d1117" stroke="#30363d"/>
-<circle cx="33" cy="34" r="4" fill="#b8e600"/>
-<text x="46" y="39" fill="#eef3f7" font-size="15" font-weight="600">GitHub Activity</text>
-<text x="820" y="39" text-anchor="end" class="label">@{esc(username)}</text>
-<path d="M30 177H820" stroke="#29323b"/>
-<text x="30" y="210" fill="#eef3f7" font-size="14" font-weight="600">The last 26 weeks</text>
-<text x="820" y="210" text-anchor="end" class="label">{sum(visible.values()):,} contributions</text>''']
-    metrics = [
-        (30, "CURRENT STREAK", stats["current"], streak_dates(stats["current_start"], stats["current_end"])),
-        (300, "LONGEST STREAK", stats["longest"], streak_dates(stats["longest_start"], stats["longest_end"])),
-        (570, "TOTAL CONTRIBUTIONS", stats["total"], f"Since {short_date(start)}"),
-    ]
-    for x, label, value, detail in metrics:
-        color = ' style="fill:#b8e600"' if label == "CURRENT STREAK" else ""
-        parts.append(f'<text x="{x}" y="79" class="label">{label}</text>')
-        parts.append(f'<text x="{x}" y="124" class="value"{color}>{value:,}</text>')
-        parts.append(f'<text x="{x}" y="149" class="detail">{esc(detail)}</text>')
-    for row, label in ((1, "Mon"), (3, "Wed"), (5, "Fri")):
-        parts.append(f'<text x="67" y="{267 + row * 25}" text-anchor="end" class="month">{label}</text>')
-    last_month = None
-    for week in range(26):
-        week_start = grid_start + timedelta(weeks=week)
-        # Use the Thursday to keep month labels near the majority of the week.
-        month = (week_start + timedelta(days=4)).month
-        x = 84 + week * 28
-        if month != last_month:
-            parts.append(f'<text x="{x}" y="241" class="month">{(week_start + timedelta(days=4)):%b}</text>')
-            last_month = month
-        for row in range(7):
-            day = week_start + timedelta(days=row)
-            if day > today:
-                continue
-            count = days.get(day, 0)
-            level = 0 if count == 0 else min(4, max(1, (count * 4 + maximum - 1) // maximum))
-            outline = ' stroke="#b8e600" stroke-width="1.5"' if day == today else ""
-            parts.append(f'<rect x="{x}" y="{253 + row * 25}" width="21" height="19" rx="3" fill="{COLORS[level]}"{outline}><title>{day}: {count} contributions</title></rect>')
-    parts.append('<text x="84" y="447" class="detail">Less</text>')
-    for i, color in enumerate(COLORS):
-        parts.append(f'<rect x="{119 + i * 17}" y="436" width="12" height="12" rx="2" fill="{color}"/>')
-    parts.append('<text x="209" y="447" class="detail">More</text>')
-    parts.append(f'<text x="805" y="447" text-anchor="end" class="detail">Today: {days[today]} contributions</text>')
-    parts.append(f'<text x="30" y="475" class="detail">Public GitHub calendar · Updated {now:%d %b %Y, %H:%M} {esc(now.tzname() or "")} · Every 6 hours</text>')
-    parts.append('</svg>\n')
-    return "\n".join(parts)
-
-
-def prepare_readme(readme: str, username: str, svg: str):
+def prepare_readme(readme: str, username: str, svg: str, streak_svg: str):
     if readme.count(START_MARKER) != 1 or readme.count(END_MARKER) != 1:
         raise ValueError("README must contain exactly one pair of GitHub activity markers")
     before, rest = readme.split(START_MARKER)
     _, after = rest.split(END_MARKER)
-    version = hashlib.sha256(svg.encode()).hexdigest()[:16]
-    card = (f"\n[![{username}'s GitHub activity](./assets/github-activity.svg?v={version})]"
-            f"(https://github.com/{username})\n")
+    graph_version = hashlib.sha256(svg.encode()).hexdigest()[:16]
+    streak_version = hashlib.sha256(streak_svg.encode()).hexdigest()[:16]
+    card = (
+        f"\n[![GitHub Streak](./assets/github-streak.svg?v={streak_version})]"
+        f"(https://github.com/{username})\n\n"
+        f"[![{username}'s GitHub Activity Graph](./assets/github-activity.svg?v={graph_version})]"
+        f"(https://github.com/{username})\n"
+    )
     return before + START_MARKER + card + END_MARKER + after
 
 
@@ -240,9 +178,10 @@ def main():
         raise ValueError("Activity start date cannot be in the future")
     days = fetch_days(username, start, now.date())
     stats = calculate_stats(days, now.date())
-    svg = render_svg(username, days, stats, start, now)
+    svg = render_svg(username, days, stats, start, now, os.getenv("ACTIVITY_DISPLAY_NAME", username))
+    streak_svg = render_streak_svg(username, days, stats, start, now)
     readme_path = ROOT / "README.md"
-    readme = prepare_readme(readme_path.read_text(), username, svg)
+    readme = prepare_readme(readme_path.read_text(), username, svg, streak_svg)
     report = {
         "username": username, "updated_at": now.isoformat(),
         "timezone": str(now.tzinfo), "source": f"https://github.com/users/{username}/contributions",
@@ -252,11 +191,12 @@ def main():
     }
     outputs = {
         ROOT / "assets/github-activity.svg": svg,
+        ROOT / "assets/github-streak.svg": streak_svg,
         ROOT / "assets/github-activity.json": json.dumps(report, default=str, indent=2) + "\n",
         readme_path: readme,
     }
     # Fetching, parsing, completeness checks and rendering finish before any write.
-    # The workflow publishes all three files together in a single Git commit.
+    # The workflow publishes all four files together in a single Git commit.
     for path, content in outputs.items():
         path.parent.mkdir(parents=True, exist_ok=True)
         temporary = path.with_suffix(path.suffix + ".tmp")
