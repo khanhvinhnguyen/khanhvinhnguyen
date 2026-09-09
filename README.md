@@ -209,9 +209,9 @@ The goal is to identify the parts of a product that will change repeatedly — a
 
 <div align="center">
 
-[![GitHub Streak](https://streak-stats.demolab.com?user=khanhvinhnguyen\&theme=merko\&hide_border=true\&date_format=j%2Fn%5B%2FY%5D\&card_width=850)](https://git.io/streak-stats)
-
-[![Vinh's GitHub Activity Graph](https://github-readme-activity-graph.vercel.app/graph?username=khanhvinhnguyen\&theme=merko\&hide_border=true)](https://github.com/ashutosh00710/github-readme-activity-graph)
+<!-- github-activity:start -->
+[![khanhvinhnguyen's GitHub activity](./assets/github-activity.svg?v=e4fd2b681fa0881e)](https://github.com/khanhvinhnguyen)
+<!-- github-activity:end -->
 
 </div>
 
