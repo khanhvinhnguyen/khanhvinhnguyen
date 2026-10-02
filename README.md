@@ -49,7 +49,7 @@ but rather:
 
 ## Currently Building
 
-### Portflow
+### Tabworki
 
 A portfolio and career workflow platform that has gradually evolved from a conventional web application into an exploration of **runtime-driven UI architecture**.
 
@@ -104,7 +104,7 @@ One principle behind the project:
 
 > AI should accelerate an architecture — not replace the need to design one.
 
-I started Portflow by building the system manually, stabilizing its core patterns and constraints first. AI-assisted development is now used as leverage for template generation, repetitive implementation, exploration, refactoring, and engineering workflows.
+I started Tabworki by building the system manually, stabilizing its core patterns and constraints first. AI-assisted development is now used as leverage for template generation, repetitive implementation, exploration, refactoring, and engineering workflows.
 
 ---
 
