@@ -1,6 +1,6 @@
 {
   "username": "khanhvinhnguyen",
-  "updated_at": "2026-10-28T05:34:17.675084+07:00",
+  "updated_at": "2026-10-28T13:13:13.602912+07:00",
   "timezone": "Asia/Ho_Chi_Minh",
   "source": "https://github.com/users/khanhvinhnguyen/contributions",
   "coverage": {
@@ -8,10 +8,10 @@
     "to": "2026-10-28"
   },
   "stats": {
-    "total": 2659,
-    "current": 0,
-    "current_start": null,
-    "current_end": null,
+    "total": 2664,
+    "current": 121,
+    "current_start": "2026-06-29",
+    "current_end": "2026-10-27",
     "longest": 218,
     "longest_start": "2024-12-30",
     "longest_end": "2025-08-04"
@@ -3370,8 +3370,8 @@
     "2026-10-23": 3,
     "2026-10-24": 2,
     "2026-10-25": 8,
-    "2026-10-26": 0,
-    "2026-10-27": 0,
+    "2026-10-26": 2,
+    "2026-10-27": 3,
     "2026-10-28": 0
   }
 }
