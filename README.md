@@ -210,9 +210,9 @@ The goal is to identify the parts of a product that will change repeatedly — a
 <div align="center">
 
 <!-- github-activity:start -->
-[![GitHub Streak](./assets/github-streak.svg?v=54539aedf8448e7d)](https://github.com/khanhvinhnguyen)
+[![GitHub Streak](./assets/github-streak.svg?v=5896dc858684e91e)](https://github.com/khanhvinhnguyen)
 
-[![khanhvinhnguyen's GitHub Activity Graph](./assets/github-activity.svg?v=d8e7c1beb0cc3ee6)](https://github.com/khanhvinhnguyen)
+[![khanhvinhnguyen's GitHub Activity Graph](./assets/github-activity.svg?v=18ab4c9f50fd4fd2)](https://github.com/khanhvinhnguyen)
 <!-- github-activity:end -->
 
 </div>
